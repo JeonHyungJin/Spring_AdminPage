@@ -1,4 +1,4 @@
-package model.entity;
+package com.example.demo.model.entity;
 
 import java.time.LocalDateTime;
 
@@ -9,10 +9,12 @@ import javax.persistence.Id;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Entity
 @Data
 @AllArgsConstructor
-@Entity
+@NoArgsConstructor
 public class User {
 
 	@Id

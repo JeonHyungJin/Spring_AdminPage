@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.StudyApplicationTests;
 import com.example.demo.model.entity.User;
@@ -56,8 +57,9 @@ public class UserRepositoryTest extends StudyApplicationTests {
 	}
 
 	@Test
+	@Transactional
 	public void delete() {
-		Optional<User> user = userRepository.findById(1L);
+		Optional<User> user = userRepository.findById(3L);
 		
 		assertTrue(user.isPresent());
 		
@@ -65,7 +67,7 @@ public class UserRepositoryTest extends StudyApplicationTests {
 			userRepository.delete(selectUser);
 		});
 		
-		Optional<User> deleteUser = userRepository.findById(2L);
+		Optional<User> deleteUser = userRepository.findById(3L);
 		
 		assertFalse(deleteUser.isPresent());
 		

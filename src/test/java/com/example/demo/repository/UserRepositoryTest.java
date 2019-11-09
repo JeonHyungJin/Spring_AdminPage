@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.StudyApplicationTests;
+import com.example.demo.model.entity.Item;
 import com.example.demo.model.entity.User;
 
 public class UserRepositoryTest extends StudyApplicationTests {
@@ -33,12 +34,18 @@ public class UserRepositoryTest extends StudyApplicationTests {
 	}
 
 	@Test
+	@Transactional
 	public void read() {
-		Optional<User> user = userRepository.findById(2L);
+		Optional<User> user = userRepository.findById(1L);
 		
 		user.ifPresent(selectUser -> {
-			System.out.println("user : " + selectUser);
-			System.out.println("email : " + selectUser.getEmail());
+			
+			selectUser.getOrderDetailList().forEach(detail -> {
+				
+				Item item = detail.getItem();
+				System.out.println(item);
+			});
+
 		});
 	}
 

@@ -26,6 +26,11 @@ public class Item {
 	private Integer price;
 	private String content;
 	
+	
+	//LAZY = 지연로딩, select * from item where id = ? 
+	//EAGER = 즉시로딩, item_id = order_detail.item_id
+	// user_id = order_detail.user_id
+	// Join 사용
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "item")
 	private List<OrderDetail> orderDetailList;
 

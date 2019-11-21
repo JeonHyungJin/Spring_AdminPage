@@ -61,9 +61,8 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
 		return optional.map(user -> {
 			// 3.update
 			user.setAccount(userApiRequest.getAccount()).setPassword(userApiRequest.getPassword())
-					.setStatus(userApiRequest.getStatus())
-					.setPhoneNumber(userApiRequest.getPhoneNumber()).setEmail(userApiRequest.getEmail())
-					.setRegisteredAt(userApiRequest.getRegisteredAt())
+					.setStatus(userApiRequest.getStatus()).setPhoneNumber(userApiRequest.getPhoneNumber())
+					.setEmail(userApiRequest.getEmail()).setRegisteredAt(userApiRequest.getRegisteredAt())
 					.setUnregisteredAt(userApiRequest.getUnregisteredAt());
 
 			// 4.userApiResponse
@@ -74,6 +73,17 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
 	@Override
 	public Header delete(Long id) {
 		// TODO Auto-generated method stub
+		// 1. id -> repository -> search
+		Optional<User> optional = userRepository.findById(id);
+
+		// 2. repository -> delete
+		optional.map(user -> {
+			userRepository.delete(user);
+			return Header.OK();
+		}).orElseGet(() -> Header.ERROR("데이터 없음"));
+
+		// 3. response return
+
 		return null;
 	}
 

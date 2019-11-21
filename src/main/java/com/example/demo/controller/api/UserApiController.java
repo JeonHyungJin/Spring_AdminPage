@@ -38,7 +38,8 @@ public class UserApiController implements CrudInterface<UserApiRequest, UserApiR
 	@GetMapping("{id}") // /api/user/{id}
 	public Header<UserApiResponse> read(@PathVariable(name = "id") Long id) {
 		// TODO Auto-generated method stub
-		return null;
+		log.info("read id : {}",id);
+		return userApiLogicService.read(id);
 	}
 
 	@Override

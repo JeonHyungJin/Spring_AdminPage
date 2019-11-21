@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,14 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
 	@Override
 	public Header<UserApiResponse> read(Long id) {
 		// TODO Auto-generated method stub
-		return null;
+
+		// id -> repository getOne, getById
+		return userRepository.findById(id)
+				.map(user -> response(user))
+				.orElseGet(() -> Header.ERROR("데이터 없음"));
+
+		// user-> userApiResponse return
+
 	}
 
 	@Override
@@ -59,8 +67,8 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
 				.password(user.getPassword()) // todo 암호화
 				.email(user.getEmail()).phoneNumber(user.getPhoneNumber()).status(user.getStatus())
 				.registeredAt(user.getRegisteredAt()).unregisteredAt(user.getUnregisteredAt()).build();
-		
-		//  Header + data  return
+
+		// Header + data return
 		return Header.OK(userApiResponse);
 	}
 

@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,7 @@ import com.example.demo.repository.OrderGroupRepository;
 import com.example.demo.repository.UserRepository;
 
 @Service
-public class OrderGroupApiLogicService implements CrudInterface<OrderGroupApiRequest, OrderGroupApiResponse> {
-
-	@Autowired
-	private OrderGroupRepository orderGroupRepository;
+public class OrderGroupApiLogicService extends BaseService<OrderGroupApiRequest, OrderGroupApiResponse, OrderGroup> {
 
 	@Autowired
 	private UserRepository userRepository;
@@ -32,41 +30,52 @@ public class OrderGroupApiLogicService implements CrudInterface<OrderGroupApiReq
 				.totalPrice(body.getTotalPrice()).totalQuantity(body.getTotalQuantity()).orderAt(LocalDateTime.now())
 				.arrivalDate(body.getArrivalDate()).user(userRepository.getOne(body.getUserId())).build();
 
-		OrderGroup newOrderGroup = orderGroupRepository.save(orderGroup);
+		OrderGroup newOrderGroup = baseRepository.save(orderGroup);
 		return response(newOrderGroup);
 	}
 
 	@Override
 	public Header<OrderGroupApiResponse> read(Long id) {
 		// TODO Auto-generated method stub
-		orderGroupRepository.findById(id).map(this::response).orElseGet(() -> Header.ERROR("데이터 없음"));
+		baseRepository.findById(id).map(this::response).orElseGet(() -> Header.ERROR("데이터 없음"));
 		return null;
 	}
 
-	@Override
-	public Header<OrderGroupApiResponse> update(Header<OrderGroupApiRequest> request) {
-		// TODO Auto-generated method stub
-		OrderGroupApiRequest body = request.getData();
+	 @Override
+	    public Header<OrderGroupApiResponse> update(Header<OrderGroupApiRequest> request) {
 
-		return orderGroupRepository.findById(body.getId()).map(orderGroup -> {
-			orderGroup.setStatus(body.getStatus()).setOrderType(body.getOrderType()).setRevAddress(body.getRevAddress())
-					.setRevName(body.getRevName()).setPaymentType(body.getPaymentType())
-					.setTotalPrice(body.getTotalPrice()).setTotalQuantity(body.getTotalQuantity())
-					.setOrderAt(body.getOrderAt()).setArrivalDate(body.getArrivalDate())
-					.setUser(userRepository.getOne(body.getUserId()));
-			return orderGroup;
+	        return Optional.ofNullable(request.getData())
+	                .map(body ->{
+	                    return baseRepository.findById(body.getId())
+	                        .map(orderGroup -> {
+	                            orderGroup
+	                                    .setStatus(body.getStatus())
+	                                    .setOrderType(body.getOrderType())
+	                                    .setRevAddress(body.getRevAddress())
+	                                    .setRevName(body.getRevName())
+	                                    .setPaymentType(body.getPaymentType())
+	                                    .setTotalPrice(body.getTotalPrice())
+	                                    .setTotalQuantity(body.getTotalQuantity())
+	                                    .setOrderAt(body.getOrderAt())
+	                                    .setArrivalDate(body.getArrivalDate())
+	                                    .setUser(userRepository.getOne(body.getUserId()))
+	                            ;
+	                            return orderGroup;
+	                        })
+	                        .map(changeOrderGroup -> baseRepository.save(changeOrderGroup))
+	                        .map(this::response)
+	                        .orElseGet(()->Header.ERROR("데이터 없음"));
+	                })
+	                .orElseGet(()->Header.ERROR("데이터 없음"));
+	    }
 
-		}).map(changeOrgerGroup -> orderGroupRepository.save(changeOrgerGroup))
-				.map(newOrderGroup -> response(newOrderGroup)).orElseGet(() -> Header.ERROR("데이터 없음"));
-
-	}
 
 	@Override
 	public Header delete(Long id) {
 		// TODO Auto-generated method stub
 
-		return orderGroupRepository.findById(id).map(orderGroup -> {
-			orderGroupRepository.delete(orderGroup);
+		return baseRepository.findById(id).map(orderGroup -> {
+			baseRepository.delete(orderGroup);
 			return Header.OK();
 		}).orElseGet(() -> Header.ERROR("데이터 없음"));
 	}
